@@ -4,6 +4,10 @@ watchdog/watchdog-heartbeat.txt
 watchdog/watchdog-hold.txt
 watchdog/watchdog-install-log.txt
 
+# 导入脚本的运行时产物
+tools/backup/
+tools/import-log.txt
+
 # Windows
 Thumbs.db
 desktop.ini
