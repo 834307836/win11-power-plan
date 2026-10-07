@@ -101,20 +101,34 @@ foreach ($s in $before) {
 }
 
 # ---------- 2. 尝试 powercfg /import ----------
-$importOk = $false
-$method   = '未知'
+$importOk    = $false
+$method      = '未知'
+$beforeGuids = @($before | ForEach-Object { $_.Guid })
 Log "尝试 powercfg /import（含 GUID）..."
 $r = (powercfg /import "$PlanFile" $TargetGuid 2>&1 | Out-String).Trim()
 Log "    exit=$LASTEXITCODE  $r"
 if ((Get-Schemes).Guid -contains $TargetGuid) { $importOk = $true; $method = 'powercfg /import <文件> <GUID>' }
 
+# ⚠️ 有的 .pow 是「多方案合并导出」（例如 lntel新.pow 一个文件里含 7 个方案）。
+#    powercfg /import 有可能把非目标的方案一并建出来，这里把「本次新增、且不是目标 GUID」的清掉，
+#    避免机器上留下一堆用不着的垃圾方案。只删本次新建的，绝不碰原有方案。
+$after  = Get-Schemes
+$extras = @($after | Where-Object { $beforeGuids -notcontains $_.Guid -and $_.Guid -ne $TargetGuid })
+if ($extras.Count -gt 0) {
+    Log "    注意：本次导入顺带建出了 $($extras.Count) 个非目标方案，正在清理："
+    foreach ($e in $extras) {
+        powercfg /delete $e.Guid 2>&1 | Out-Null
+        Log ("      已删除 {0}  ({1})" -f $e.Guid, $e.Name)
+    }
+}
+
 if (-not $importOk) {
     Log "尝试 powercfg /import（不指定 GUID）..."
-    $beforeGuids = (Get-Schemes).Guid
+    $beforeGuids = @((Get-Schemes).Guid)
     $r = (powercfg /import "$PlanFile" 2>&1 | Out-String).Trim()
     Log "    exit=$LASTEXITCODE  $r"
-    $new = (Get-Schemes) | Where-Object { $beforeGuids -notcontains $_.Guid }
-    if ($new) {
+    $new = @((Get-Schemes) | Where-Object { $beforeGuids -notcontains $_.Guid })
+    if ($new.Count -gt 0) {
         Log "    新方案：$($new.Guid -join ',')（不是目标 GUID，删除后走模板路线）"
         foreach ($n in $new) { powercfg /delete $n.Guid 2>&1 | Out-Null }
     }
