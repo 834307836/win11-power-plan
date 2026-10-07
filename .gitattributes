@@ -1,0 +1,7 @@
+# 电源计划文件保持原样，禁止 Git 做行尾转换
+# （否则 .pow 的字节会变，MD5 与来源文件就对不上了）
+*.pow -text
+
+# Windows 脚本统一 CRLF
+*.ps1 text eol=crlf
+*.cmd text eol=crlf

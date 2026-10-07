@@ -1,0 +1,9 @@
+# 看门狗运行时产物（每台机器不同，不入库）
+watchdog/watchdog-log.txt
+watchdog/watchdog-heartbeat.txt
+watchdog/watchdog-hold.txt
+watchdog/watchdog-install-log.txt
+
+# Windows
+Thumbs.db
+desktop.ini
