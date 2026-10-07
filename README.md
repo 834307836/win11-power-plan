@@ -227,6 +227,7 @@ Unregister-ScheduledTask -TaskName 'PowerPlanWatchdog' -Confirm:$false
   - **原视频**：<https://www.bilibili.com/video/BV1G3t96kEEr/>
 - 本仓库仅做**整理归档**：文件未做任何修改，仓库**不从中获利**，也不声称拥有这些内容的任何权利。
 - 本仓库**自行编写**的部分（`watchdog/`、`tools/`、`README.md`）以 **MIT 许可**发布，可自由使用、修改、再分发。
+  - 许可全文见仓库根目录的 [`LICENSE`](LICENSE)。该文件开头写明了适用范围：**MIT 只管自行编写的部分，不覆盖 `plans/`**。
 - **若原作者认为本仓库侵犯了您的权益，请通过 Issue 或 GitHub 联系我，我会立即下架相关内容。**
 
 ### 免责
