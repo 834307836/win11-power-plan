@@ -6,20 +6,19 @@
 > - **原视频**：<https://www.bilibili.com/video/BV1G3t96kEEr/>
 > - 视频与博主频道里还有**导入教程、延迟优化**等其他内容，动手前建议先完整看一遍视频。
 >
-> 本仓库只是**整理归档**，5 个电源计划的版权与功劳**全部归原作者所有**。
-> 仓库里唯一由本仓库新增的东西是 `watchdog/`（电源方案看门狗），用途是换机时能一键部署。
+> 本仓库只是**整理归档**，4 个电源计划的版权与功劳**全部归原作者所有**。
+> 仓库里唯一由本仓库新增的东西是 `watchdog/`（电源方案看门狗）与 `tools/`（换机部署脚本）。
 
 ---
 
 ## 一、仓库内容
 
 ```
-plans/                          5 个电源计划（原样收录，未做任何修改）
-  ├─ amd笔记本.pow              AMD 笔记本
-  ├─ lntel笔记本.pow            Intel 笔记本
-  ├─ lntel新.pow                Intel 台式机
-  ├─ AMD致郁专辑.pow            AMD 台式机（注册表配置单元格式）
-  └─ lntel致郁专辑.pow          Intel 台式机（注册表配置单元格式）
+plans/                          4 个电源计划（原样收录，未做任何修改）
+  ├─ amd笔记本.pow              笔记本 AMD
+  ├─ lntel笔记本.pow            笔记本 Intel
+  ├─ AMD致郁专辑.pow            台式 AMD（注册表配置单元格式）
+  └─ lntel新.pow                台式 Intel
 watchdog/                       电源方案看门狗（本仓库自己写的配套工具）
   ├─ powerplan-watchdog.ps1     看门狗本体
   ├─ install-watchdog.cmd       一键安装（双击，自动提权）
@@ -28,52 +27,77 @@ watchdog/                       电源方案看门狗（本仓库自己写的配
   ├─ watchdog-pause.cmd         暂停看门狗（双击）
   └─ watchdog-resume.cmd        恢复看门狗（双击）
 tools/                          换机部署用（本仓库自己写的配套工具）
-  ├─ import-plan.cmd            一键导入 .pow（双击，自动提权）
-  └─ import-plan.ps1            导入 + 逐项写入 + 逐项校验
+  ├─ import-plan.cmd            XML 格式 .pow 一键导入（双击，自动提权）
+  ├─ import-plan.ps1            XML：导入 + 逐项写入 + 逐项校验
+  ├─ import-hive-plan.cmd       注册表配置单元格式 .pow 一键导入（双击，自动提权）
+  └─ import-hive-plan.ps1       配置单元：直接解析并写入注册表 + 逐项校验
 ```
 
-### 5 个方案的对应关系
+### 4 个方案的对应关系
 
-| 文件 | 适用平台 | 格式 | 备注 |
+| 文件 | 适用平台 | 格式 | 方案 GUID |
 |---|---|---|---|
-| `amd笔记本.pow` | AMD 笔记本 | UTF-8 XML | 日常主力方案 |
-| `lntel笔记本.pow` | Intel 笔记本 | UTF-8 XML | 与 `amd笔记本.pow` **内容完全相同**（MD5 一致） |
-| `lntel新.pow` | Intel 台式机 | UTF-8 XML | 设置项最全（2276 行） |
-| `AMD致郁专辑.pow` | AMD 台式机 | **注册表配置单元** | 文件头为 `regf`，**不是** XML |
-| `lntel致郁专辑.pow` | Intel 台式机 | **注册表配置单元** | 同上 |
+| `amd笔记本.pow` | 笔记本 AMD | UTF-8 XML | `a4720da6-34e3-4ad1-ba2c-b7cece8f506b` |
+| `lntel笔记本.pow` | 笔记本 Intel | UTF-8 XML | `64877623-6e57-4bf4-8229-224ab01ed9f5` |
+| `AMD致郁专辑.pow` | 台式 AMD | **注册表配置单元** | `d301d1cd-43d3-41ca-be87-b5859eab3cff` |
+| `lntel新.pow` | 台式 Intel | UTF-8 XML | `ff1f4777-af38-40e7-80be-1664c5a71f34` |
 
-> ⚠️ 两点提醒（都是原样保留，未改动）：
-> 1. `amd笔记本.pow` 与 `lntel笔记本.pow` 的 **MD5 完全相同**（`3efb417f26d0093ea4c4a07c06884894`），
->    即两份文件内容一模一样。仓库仍按博主原样保留两个文件名。
-> 2. 文件名里的 `lntel` 是博主原文写法（小写 L），不是 `Intel`，**未做改名**，以免与你手上的文件对不上。
+> ⚠️ 三点提醒（文件都是原样保留，未做任何改动）：
+>
+> 1. 文件名里的 `lntel` 是博主原文写法（小写 L），不是 `Intel`，**未做改名**，以免和你手上的文件对不上。
+> 2. `amd笔记本.pow` 与 `lntel笔记本.pow` 的 **MD5 完全相同**（`3efb417f26d0093ea4c4a07c06884894`），
+>    即两份文件内容一模一样，只是文件名对应不同设备。仓库按博主原样保留两个文件名。
+> 3. `lntel新.pow` 是**多方案合并导出**：一个文件里含 **7 个**方案 —— 其中 4 个正是上表这 4 台设备的方案，
+>    另外 3 个是教程里没提的 GUID（`16f4b071` / `473f9451` / `f71f75f9`）。
+>    **导入时务必带上 GUID 参数**，否则可能把多余方案一起建出来，见第二节。
+
+### 整理记录：删掉了哪些重复
+
+原始来源一共 5 个文件，其中存在重复，已按「每台设备只留一个」整理：
+
+| 文件 | 判定依据 | 处理 |
+|---|---|---|
+| `lntel致郁专辑.pow` | 20 项设置与 `AMD致郁专辑.pow` **逐项完全相同**（只是根 GUID 不同 `ca9b706f` / `d301d1cd`），且博主教程里没有它 | 已移除 |
+| `lntel新.pow` 里的 `16f4b071` / `473f9451` / `f71f75f9` | 教程之外的残留方案，其中后两个内容还彼此相同 | 文件保留不动，导入时**不要**选这三个 GUID |
+| `lntel.pow`（另在桌面找到的 hive 文件，GUID `6a909681`） | 14 项设置与 `lntel新.pow` 里的台式 Intel（`ff1f4777`）**逐项完全相同**，属同一套设置换个 GUID | 未收录 |
+
+判定方法不是比文件名，而是**逐项拆开数值比对**（XML 解析 `acindex`/`dcindex`，配置单元解析 `ACSettingIndex`/`DCSettingIndex`，再交叉比较）。
 
 ---
 
 ## 二、怎么导入
 
-### 方式 A：XML 格式的三个（`amd笔记本` / `lntel笔记本` / `lntel新`）
+### 方式 A：双击脚本导入（推荐）
 
-管理员身份打开 CMD，把 `.pow` 放到任意路径后执行：
+两个脚本都会自动提权、**先把本机现有方案全部备份**到 `tools\backup\`，并且**不删除任何原有方案**。
+
+| 文件格式 | 双击哪个 |
+|---|---|
+| XML（`amd笔记本` / `lntel笔记本` / `lntel新`） | `tools/import-plan.cmd` |
+| 注册表配置单元（`AMD致郁专辑`） | `tools/import-hive-plan.cmd` |
+
+按提示粘贴 `.pow` 的完整路径，再粘贴对应 GUID（配置单元那个脚本可以直接回车，它会自己从文件里读出 GUID）。
+
+导入后执行 `powercfg /list` 核对，带 `*` 号的是当前正在使用的方案。
+
+### 方式 B：原生命令（仅限 XML 格式）
+
+管理员身份打开 CMD：
 
 ```cmd
 powercfg /import "C:\amd笔记本.pow" a4720da6-34e3-4ad1-ba2c-b7cece8f506b
 ```
 
-不同方案的 GUID（来自博主教程）：
+博主教程里写的四条：
 
-| 方案 | GUID |
-|---|---|
-| Intel 台式机（`lntel新.pow`） | `ff1f4777-af38-40e7-80be-1664c5a71f34` |
-| AMD 台式机（`AMD致郁专辑.pow`） | `d301d1cd-43d3-41ca-be87-b5859eab3cff` |
-| Intel 笔记本（`lntel笔记本.pow`） | `64877623-6e57-4bf4-8229-224ab01ed9f5` |
-| AMD 笔记本（`amd笔记本.pow`） | `a4720da6-34e3-4ad1-ba2c-b7cece8f506b` |
+```cmd
+powercfg /import "C:\lntel新.pow"  ff1f4777-af38-40e7-80be-1664c5a71f34
+powercfg /import "C:\amd笔记本.pow" a4720da6-34e3-4ad1-ba2c-b7cece8f506b
+powercfg /import "C:\lntel笔记本.pow" 64877623-6e57-4bf4-8229-224ab01ed9f5
+```
 
-导入后执行 `powercfg /list` 核对，带 `*` 号的是当前正在使用的方案。
-
-### 方式 B：注册表配置单元格式的两个（`*致郁专辑`）
-
-这两个文件的文件头是 `regf`（注册表配置单元），**不能**用 `powercfg /import`。
-请按博主视频里的教程导入。
+> ⚠️ `AMD致郁专辑.pow` 的文件头是 `regf`（注册表配置单元），**`powercfg /import` 读不了**。
+> 必须用 `tools/import-hive-plan.cmd`，或博主的 `电源计划导入器.exe`。
 
 ### 方式 C：可视化导入
 
@@ -138,20 +162,26 @@ Unregister-ScheduledTask -TaskName 'PowerPlanWatchdog' -Confirm:$false
 
 ### 第 1 步：导入电源方案
 
-双击 `tools/import-plan.cmd`（自动提权），按提示：
+按文件格式双击对应的脚本（都会自动提权）：
 
-1. 粘贴 `.pow` 的完整路径（例如 `D:\win11-power-plan\plans\amd笔记本.pow`）
-2. 粘贴对应的 GUID（见上面第二节的 GUID 表）
+| 文件 | 双击哪个 |
+|---|---|
+| `amd笔记本.pow` / `lntel笔记本.pow` / `lntel新.pow` | `tools/import-plan.cmd` |
+| `AMD致郁专辑.pow` | `tools/import-hive-plan.cmd` |
 
-脚本会依次做这些事，**不会删除你原有的任何方案**：
+按提示粘贴 `.pow` 的完整路径（例如 `D:\win11-power-plan\plans\amd笔记本.pow`）和对应的 GUID。
+
+两个脚本都会做这些事，**不会删除你原有的任何方案**：
 
 - 先把本机现有方案**全部备份**到 `tools\backup\`
-- `powercfg /import` 导入
+- 把方案建出来（XML 走 `powercfg /import`；配置单元走原生注册表写入）
 - 若 `powercfg` 不接受该文件，则以「均衡」为模板新建同 GUID 方案，再按 XML **逐项写入**
 - **逐项读回校验**，把不一致的项全部列出来
 - 设为当前方案
 
 > `tools\backup\` 与 `tools\import-log.txt` 是运行时产物，已在 `.gitignore` 里排除。
+>
+> ⚠️ 第一次用建议先在**非主力机器**上跑一遍，确认方案出现在 `powercfg /list` 里，再上主力机。
 
 ### 第 2 步：装看门狗
 
@@ -170,9 +200,6 @@ Unregister-ScheduledTask -TaskName 'PowerPlanWatchdog' -Confirm:$false
 
 这条比看门狗更硬：其他程序调 `powercfg /setactive` 会被**直接忽略**。
 
-> ⚠️ 两个「致郁专辑」是**注册表配置单元**格式，`tools/import-plan.cmd` 处理不了 ——
-> 它会明确报错并中止（**不会动你现有的方案**）。请按原作者视频里的方式导入。
-
 ---
 
 ## 五、其他小技巧
@@ -184,13 +211,15 @@ Unregister-ScheduledTask -TaskName 'PowerPlanWatchdog' -Confirm:$false
 
 **删除电源方案**：`powercfg /delete <GUID>`（注意 `delete` 后面要有空格）
 
+**导入前先看文件是什么格式**：文件头是 `<?xml` 的就是 XML；文件头是 `regf` 的就是注册表配置单元。
+
 ---
 
 ## 六、版权与免责声明
 
 ### 版权
 
-- 本仓库收录的 **5 个电源计划文件（`plans/` 目录）版权归原作者所有**。
+- 本仓库收录的 **4 个电源计划文件（`plans/` 目录）版权归原作者所有**。
   - **原作者：B站博主「秋」**
   - **原视频**：<https://www.bilibili.com/video/BV1G3t96kEEr/>
 - 本仓库仅做**整理归档**：文件未做任何修改，仓库**不从中获利**，也不声称拥有这些内容的任何权利。
@@ -201,5 +230,5 @@ Unregister-ScheduledTask -TaskName 'PowerPlanWatchdog' -Confirm:$false
 
 - 电源方案会改动 CPU 频率、功耗墙、散热策略等底层行为，**可能影响稳定性、温度与续航**。
   请自行判断风险，重要工作场景慎用。
-- 使用前请务必确认已备份原有电源方案（`tools/import-plan.cmd` 会自动备份）。
+- 使用前请务必确认已备份原有电源方案（`tools/` 下的两个脚本都会自动备份）。
 - 本仓库不对因使用这些配置而造成的任何直接或间接损失负责。
